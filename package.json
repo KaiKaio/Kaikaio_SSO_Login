@@ -1,0 +1,21 @@
+{
+  "name": "kaikaio-sso-login",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "dev:test": "NODE_ENV=test vite --mode=test",
+    "build": "NODE_ENV=production vite build"
+  },
+  "dependencies": {
+    "axios": "^0.21.1",
+    "element-plus": "^1.0.2-beta.30",
+    "jsencrypt": "^3.0.0-rc.1",
+    "vue": "^3.0.4"
+  },
+  "devDependencies": {
+    "@vue/compiler-sfc": "^3.0.4",
+    "babel-plugin-component": "^1.1.1",
+    "dotenv": "^8.2.0",
+    "vite": "^1.0.0-rc.13"
+  }
+}
