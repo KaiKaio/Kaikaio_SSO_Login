@@ -24,16 +24,15 @@ const LoginPage = defineComponent({
     let loading = ref(true);
     let { referrer } = document;
     const rightful = referrerHost.indexOf(referrer) > -1;
-    if(!referrer || !rightful) {
+    if(!(referrer && rightful)) {
       referrer = referrerHost[0]
     }
-
+    console.log(referrer, 'referrer')
     const encrypt = new jsencrypt();
     axios.get('/user/public_key').then(({data: {msg}}) => {
       encrypt.setPublicKey(msg);
       loading.value = false;
     })
-    
     const getLoginInfo = ({username, password}) => {
       axios.post('/user/login', {
         userName: username,
@@ -48,6 +47,8 @@ const LoginPage = defineComponent({
 
         const iframe = document.createElement("iframe");
         iframe.src = referrer;
+        console.log(referrer, 'referrer')
+        console.log(iframe.src, 'referrer')
         iframe.style.display = "none";
         document.body.append(iframe);
         iframe.onload = () => {
