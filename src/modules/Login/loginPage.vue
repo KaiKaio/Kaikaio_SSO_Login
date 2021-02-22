@@ -47,8 +47,6 @@ const LoginPage = defineComponent({
 
         const iframe = document.createElement("iframe");
         iframe.src = referrer;
-        console.log(referrer, 'referrer')
-        console.log(iframe.src, 'referrer')
         iframe.style.display = "none";
         document.body.append(iframe);
         iframe.onload = () => {
@@ -59,7 +57,7 @@ const LoginPage = defineComponent({
           }, referrer);
         }
       }).catch((err) => {
-        console.log(err)
+        console.warn(err)
       })
     }
     return {
