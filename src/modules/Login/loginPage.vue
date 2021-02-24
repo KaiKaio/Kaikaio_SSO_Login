@@ -27,7 +27,6 @@ const LoginPage = defineComponent({
     if(!(referrer && rightful)) {
       referrer = referrerHost[0]
     }
-    console.log(referrer, 'referrer')
     const encrypt = new jsencrypt();
     axios.get('/user/public_key').then(({data: {msg}}) => {
       encrypt.setPublicKey(msg);
