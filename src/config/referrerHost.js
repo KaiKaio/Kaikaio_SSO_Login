@@ -1,11 +1,11 @@
 const referrerHost = [
-  'kaikaio.com',
-  'localhost:3001',
-  'localhost:8080',
-  'localhost:7099',
-  'qiankun.kaikaio.com',
+  'https://kaikaio.com/',
+  'http://localhost:3001/',
+  'http://localhost:8080/',
+  'http://localhost:7099/',
+  'https://qiankun.kaikaio.com/',
   'https://admin.kaikaio.com/',
-  'vueAdmin.kaikaio.com',
+  'https://vueAdmin.kaikaio.com/',
 ];
 
 export { referrerHost };
