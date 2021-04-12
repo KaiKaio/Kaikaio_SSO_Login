@@ -4,94 +4,111 @@
     <div class="login-wrapper" v-loading="loading">
       <LoginForm @loginInfo="getLoginInfo" />
     </div>
-    <img class="login-img" src="http://static.kaikaio.com/article/v2-2d9808f88683a86c71e6c9b1b56277e8_r.jpg" alt="">
+    <img
+      class="login-img"
+      src="http://static.kaikaio.com/article/v2-2d9808f88683a86c71e6c9b1b56277e8_r.jpg"
+      alt=""
+    />
   </div>
 </template>
 
 <script>
-import { defineComponent, reactive, ref } from 'vue'
-import LoginForm from '../../components/LoginForm.vue'
-import axios from '../../config/request';
-import jsencrypt from 'jsencrypt';
-import { referrerHost } from '../../config/referrerHost'
+import { defineComponent, reactive, ref } from "vue";
+import LoginForm from "../../components/LoginForm.vue";
+import axios from "../../config/request";
+import jsencrypt from "jsencrypt";
+import { referrerHost } from "../../config/referrerHost";
 
 const LoginPage = defineComponent({
-  name: 'LoginPage',
+  name: "LoginPage",
   components: {
-    LoginForm
+    LoginForm,
   },
   setup() {
     let loading = ref(true);
     let { referrer } = document;
     const encrypt = new jsencrypt();
 
-    axios.get('/user/verifyToken').then(
-      () => {
-        if(referrer) {
-          handleReferrer(localStorage.token);
+    axios
+      .get("/user/verifyToken")
+      .then(
+        () => {
+          if (referrer) {
+            handleReferrer(localStorage.token);
+          }
+        },
+        (err) => {
+          console.error(err, " => Token 失效");
+          return new Promise((resolve, reject) => {
+            resolve();
+          });
         }
-      },
-      (err) => {
-        console.error(err, ' => Token 失效');
-        return new Promise((resolve, reject) => {
-          resolve();
-        })
-      }
-    ).then(() => {
-      const rightful = referrerHost.indexOf(referrer) > -1;
-      if(!(referrer && rightful)) {
-        referrer = referrerHost[0]
-      }
+      )
+      .then(() => {
+        const rightful = referrerHost.indexOf(referrer) > -1;
+        if (!(referrer && rightful)) {
+          referrer = referrerHost[0];
+        }
 
-      return axios.get('/user/public_key');
-    }).then(({data: {msg}}) => {
-      encrypt.setPublicKey(msg);
-      loading.value = false;
-    });
-    
-    const getLoginInfo = ({username, password}) => {
-      axios.post('/user/login', {
-        userName: username,
-        password: encrypt.encrypt(password),
-      }).then(({data: { token }}) => {
-        localStorage.setItem('token', token);
-
-        handleReferrer(token);
-      }).catch((err) => {
-        console.warn(err)
+        return axios.get("/user/public_key");
       })
-    }
+      .then(({ data: { msg } }) => {
+        encrypt.setPublicKey(msg);
+        loading.value = false;
+      });
 
-    const handleReferrer = (token)  => {
-      window.addEventListener('message', ({data: { msg }}) => {
-        if(msg === 'token received') {
-          iframe.remove();
-          window.location.href = referrer
-        }
-      }, false);
+    const getLoginInfo = ({ username, password }) => {
+      axios
+        .post("/user/login", {
+          userName: username,
+          password: encrypt.encrypt(password),
+        })
+        .then(({ data: { token } }) => {
+          localStorage.setItem("token", token);
+
+          handleReferrer(token);
+        })
+        .catch((err) => {
+          console.warn(err);
+        });
+    };
+
+    const handleReferrer = (token) => {
+      window.addEventListener(
+        "message",
+        ({ data: { msg } }) => {
+          if (msg === "token received") {
+            iframe.remove();
+            window.location.href = referrer;
+          }
+        },
+        false
+      );
 
       const iframe = document.createElement("iframe");
-      console.log(referrer, 'iframeReferrer')
+      console.log(referrer, "iframeReferrer");
       iframe.src = referrer;
       iframe.style.display = "none";
       document.body.append(iframe);
       iframe.onload = () => {
         // iframe加载完成后要进行的操作
-        iframe.contentWindow.postMessage({
-          token,
-          method: 'setToken',
-        }, referrer);
-      }
-    }
+        iframe.contentWindow.postMessage(
+          {
+            token,
+            method: "setToken",
+          },
+          referrer
+        );
+      };
+    };
     return {
       loading,
-      getLoginInfo
-    }
+      getLoginInfo,
+    };
   },
-})
+});
 
-
-export default LoginPage
+export default LoginPage;
 </script>
 
 <style>
@@ -122,7 +139,7 @@ export default LoginPage
   animation-duration: 1s;
   animation-fill-mode: forwards;
   filter: blur(3px);
-  transition: all .3s;
+  transition: all 0.3s;
 }
 
 #login-page .login-img:hover {
