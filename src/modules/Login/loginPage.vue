@@ -23,43 +23,65 @@ const LoginPage = defineComponent({
   setup() {
     let loading = ref(true);
     let { referrer } = document;
-    const rightful = referrerHost.indexOf(referrer) > -1;
-    if(!(referrer && rightful)) {
-      referrer = referrerHost[0]
-    }
-    console.log(referrer, 'referrer')
     const encrypt = new jsencrypt();
-    axios.get('/user/public_key').then(({data: {msg}}) => {
+
+    axios.get('/user/verifyToken').then(
+      () => {
+        if(referrer) {
+          handleReferrer(localStorage.token);
+        }
+      },
+      (err) => {
+        console.error(err, ' => Token 失效');
+        return new Promise((resolve, reject) => {
+          resolve();
+        })
+      }
+    ).then(() => {
+      const rightful = referrerHost.indexOf(referrer) > -1;
+      if(!(referrer && rightful)) {
+        referrer = referrerHost[0]
+      }
+
+      return axios.get('/user/public_key');
+    }).then(({data: {msg}}) => {
       encrypt.setPublicKey(msg);
       loading.value = false;
-    })
+    });
+    
     const getLoginInfo = ({username, password}) => {
       axios.post('/user/login', {
         userName: username,
         password: encrypt.encrypt(password),
       }).then(({data: { token }}) => {
-        window.addEventListener('message', ({data: { msg }}) => {
-          if(msg === 'token received') {
-            iframe.remove();
-            window.location.href = referrer
-          }
-        }, false);
+        localStorage.setItem('token', token);
 
-        const iframe = document.createElement("iframe");
-        console.log(referrer, 'iframereferrer')
-        iframe.src = referrer;
-        iframe.style.display = "none";
-        document.body.append(iframe);
-        iframe.onload = () => {
-          // iframe加载完成后要进行的操作
-          iframe.contentWindow.postMessage({
-            token,
-            method: 'setToken',
-          }, referrer);
-        }
+        handleReferrer(token);
       }).catch((err) => {
         console.warn(err)
       })
+    }
+
+    const handleReferrer = (token)  => {
+      window.addEventListener('message', ({data: { msg }}) => {
+        if(msg === 'token received') {
+          iframe.remove();
+          window.location.href = referrer
+        }
+      }, false);
+
+      const iframe = document.createElement("iframe");
+      console.log(referrer, 'iframeReferrer')
+      iframe.src = referrer;
+      iframe.style.display = "none";
+      document.body.append(iframe);
+      iframe.onload = () => {
+        // iframe加载完成后要进行的操作
+        iframe.contentWindow.postMessage({
+          token,
+          method: 'setToken',
+        }, referrer);
+      }
     }
     return {
       loading,
