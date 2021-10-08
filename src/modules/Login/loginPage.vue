@@ -165,7 +165,7 @@ export default LoginPage;
 
 #login-page .login-wrapper .login-form-wrapper {
   flex: 1;
-  padding: 8px 8px 8px 8px;
+  padding: 40px 8px 8px 8px;
 }
 
 #login-page .login-wrapper .login-form-wrapper .login-form {
