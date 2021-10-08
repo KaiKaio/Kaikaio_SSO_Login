@@ -1,14 +1,23 @@
 <template>
   <div id="login-page">
-    <p class="login-title">Kaikaio-SSO-Login</p>
     <div class="login-wrapper" v-loading="loading">
-      <LoginForm @loginInfo="getLoginInfo" />
+      <img
+        class="login-img"
+        src="http://static.kaikaio.com/article/v2-2d9808f88683a86c71e6c9b1b56277e8_r.jpg"
+        alt=""
+      />
+      <div class="login-form-wrapper">
+        <div class="logo">
+          <svg class="icon logo-icon" aria-hidden="true">
+            <use xlink:href="#icon-cat"></use>
+          </svg>
+          <h3>Kaikaio - SSO</h3>
+        </div>
+        
+        <LoginForm class="login-form" @loginInfo="getLoginInfo" />
+      </div>
+      
     </div>
-    <img
-      class="login-img"
-      src="http://static.kaikaio.com/article/v2-2d9808f88683a86c71e6c9b1b56277e8_r.jpg"
-      alt=""
-    />
   </div>
 </template>
 
@@ -125,46 +134,65 @@ export default LoginPage;
 
 #login-page {
   position: relative;
+  min-width: 240px;
+  min-height: 500px;
   width: 100vw;
   height: 100vh;
-  background: #000;
+  background-color: #f0f6ff;
   overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 #login-page .login-img {
-  position: absolute;
-  width: 50%;
-  top: 30%;
-  animation-name: play;
-  animation-duration: 1s;
-  animation-fill-mode: forwards;
-  filter: blur(3px);
-  transition: all 0.3s;
+  border-radius: 12px 0px 0px 12px;
+  width: 60%;
+  object-fit: cover;
+  object-position: center;
 }
 
-#login-page .login-img:hover {
-  filter: blur(0px);
-}
-
-.login-wrapper {
-  width: 30%;
-  position: absolute;
-  padding: 12px;
-  box-shadow: #8d8d8d 0px 0px 12px;
-  left: 20px;
+#login-page .login-wrapper {
+  min-width: inherit;
+  min-height: inherit;
+  width: 80%;
+  height: 70%;
+  box-shadow: #ccc 4px 4px 6px;
+  background-color: #fff;
   border-radius: 12px;
-  border: 2px solid #8d8d8d;
+  display: flex;
 }
+
+#login-page .login-wrapper .login-form-wrapper {
+  flex: 1;
+  padding: 8px 8px 8px 8px;
+}
+
+#login-page .login-wrapper .login-form-wrapper .login-form {
+  margin-top: 36px;
+  margin-right: 20px;
+}
+
+#login-page .login-wrapper .login-form-wrapper .logo {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+#login-page .login-wrapper .login-form-wrapper .logo .logo-icon {
+  width: 50px;
+  height: 50px;
+}
+
+#login-page .login-wrapper .login-form-wrapper .logo > h3 {
+  font-size: 28px;
+  line-height: 28px;
+  font-weight: bold;
+  color: #555;
+}
+
 
 .login-wrapper .el-form-item__label {
-  color: #fff;
-}
-
-.login-title {
-  color: #fff;
-  font-weight: 700;
-  font-size: 18px;
-  text-align: center;
-  margin-top: 20px;
+  color: #333;
 }
 </style>
