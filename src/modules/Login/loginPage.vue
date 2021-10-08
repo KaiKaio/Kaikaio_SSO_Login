@@ -1,11 +1,27 @@
 <template>
   <div id="login-page">
     <div class="login-wrapper" v-loading="loading">
-      <img
+      <!-- <img
         class="login-img"
         src="http://static.kaikaio.com/article/v2-2d9808f88683a86c71e6c9b1b56277e8_r.jpg"
         alt=""
-      />
+      /> -->
+
+      <div class="swiper-container swiper1">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide" v-for="imgItem in imgList" :key="imgItem.hsh">
+            <img :src="`https://cn.bing.com${imgItem.url}`" alt="" />
+          </div>
+        </div>
+        <!-- 如果需要分页器 -->
+        <div class="swiper-pagination"></div>
+
+        <div class="swiper-button-prev"></div>
+        <!--左箭头。如果放置在swiper-container外面，需要自定义样式。-->
+        <div class="swiper-button-next"></div>
+        <!--右箭头。如果放置在swiper-container外面，需要自定义样式。-->
+      </div>
+
       <div class="login-form-wrapper">
         <div class="logo">
           <svg class="icon logo-icon" aria-hidden="true">
@@ -22,11 +38,23 @@
 </template>
 
 <script>
-import { defineComponent, reactive, ref } from "vue";
+import { defineComponent, reactive, ref, onMounted } from "vue";
 import LoginForm from "../../components/LoginForm.vue";
 import axios from "../../config/request";
 import jsencrypt from "jsencrypt";
 import { referrerHost } from "../../config/referrerHost";
+
+import Swiper, {
+  Autoplay,
+  EffectCoverflow,
+  EffectCube,
+  Pagination,
+  Navigation,
+} from "swiper";
+Swiper.use([Autoplay, EffectCoverflow, EffectCube, Pagination, Navigation]);
+import "swiper/swiper-bundle.min.css";
+import "swiper/swiper.less";
+
 
 const LoginPage = defineComponent({
   name: "LoginPage",
@@ -34,7 +62,31 @@ const LoginPage = defineComponent({
     LoginForm,
   },
   setup() {
+    onMounted(() => {
+      new Swiper(".swiper1", {
+        pagination: {
+          el: ".swiper-pagination",
+        },
+        navigation: {
+          nextEl: ".swiper-button-next",
+          prevEl: ".swiper-button-prev",
+          hideOnClick: true,
+        },
+        autoplay: {
+          delay: 3000,
+          stopOnLastSlide: false,
+          disableOnInteraction: true,
+        },
+        on: {
+          navigationShow: function () {
+            console.log("按钮显示了");
+          },
+        },
+      });
+    })
+
     let loading = ref(true);
+    let imgList = reactive([]);
     let { referrer } = document;
     const encrypt = new jsencrypt();
 
@@ -65,6 +117,11 @@ const LoginPage = defineComponent({
         encrypt.setPublicKey(msg);
         loading.value = false;
       });
+    
+    axios.get('/fetchBingWallpaper').then((res) => {
+      imgList.value = res.data.data
+      console.log(imgList, 'imgList')
+    })
 
     const getLoginInfo = ({ username, password }) => {
       axios
@@ -112,6 +169,7 @@ const LoginPage = defineComponent({
     };
     return {
       loading,
+      imgList,
       getLoginInfo,
     };
   },
