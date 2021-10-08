@@ -2,7 +2,7 @@
   "name": "kaikaio-sso-login",
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite",
+    "dev": "cross-env NODE_ENV=development vite --mode=development",
     "dev:test": "cross-env NODE_ENV=test vite --mode=test",
     "build": "cross-env NODE_ENV=production vite build"
   },
