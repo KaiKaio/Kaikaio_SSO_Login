@@ -1,12 +1,6 @@
 <template>
   <div id="login-page">
     <div class="login-wrapper" v-loading="loading">
-      <!-- <img
-        class="login-img"
-        src="http://static.kaikaio.com/article/v2-2d9808f88683a86c71e6c9b1b56277e8_r.jpg"
-        alt=""
-      /> -->
-
       <div class="swiper-container login-swiper">
         <div class="swiper-wrapper">
           <div class="swiper-slide" v-for="imgItem in imgList" :key="imgItem.hsh">
@@ -78,8 +72,16 @@ const LoginPage = defineComponent({
         },
         effect: 'fade',
         on: {
-          navigationShow: function () {
-            console.log("按钮显示了");
+          init: function () {
+            setTimeout(() => {
+              if (document.createEvent) {
+                let event = document.createEvent("HTMLEvents");
+                event.initEvent("resize", true, true);
+                window.dispatchEvent(event);
+              } else if (document.createEventObject) {
+                window.fireEvent("onresize");
+              }
+            }, 1000)
           },
         },
       });
