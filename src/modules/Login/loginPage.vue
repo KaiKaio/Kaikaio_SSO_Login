@@ -215,15 +215,15 @@ export default LoginPage;
   display: flex;
 }
 
-#login-page .login-img {
-  border-radius: 12px 0px 0px 12px;
-  
-  object-fit: cover;
-  object-position: center;
-}
-
 #login-page .login-wrapper .login-swiper {
   width: 60%;
+  border-radius: 12px 0px 0px 12px;
+}
+
+#login-page .login-wrapper .login-swiper .swiper-wrapper,
+#login-page .login-wrapper .login-swiper .swiper-wrapper .swiper-slide,
+#login-page .login-wrapper .login-swiper .swiper-wrapper .swiper-slide > img {
+  border-radius: 12px 0px 0px 12px;
 }
 
 #login-page .login-wrapper .login-swiper .swiper-slide > img {
