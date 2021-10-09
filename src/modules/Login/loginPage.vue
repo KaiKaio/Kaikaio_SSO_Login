@@ -7,7 +7,7 @@
         alt=""
       /> -->
 
-      <div class="swiper-container swiper1">
+      <div class="swiper-container login-swiper">
         <div class="swiper-wrapper">
           <div class="swiper-slide" v-for="imgItem in imgList" :key="imgItem.hsh">
             <img :src="`https://cn.bing.com${imgItem.url}`" alt="" />
@@ -47,11 +47,11 @@ import { referrerHost } from "../../config/referrerHost";
 import Swiper, {
   Autoplay,
   EffectCoverflow,
-  EffectCube,
+  EffectFade,
   Pagination,
   Navigation,
 } from "swiper";
-Swiper.use([Autoplay, EffectCoverflow, EffectCube, Pagination, Navigation]);
+Swiper.use([Autoplay, EffectCoverflow, EffectFade, Pagination, Navigation]);
 import "swiper/swiper-bundle.min.css";
 import "swiper/swiper.less";
 
@@ -63,7 +63,7 @@ const LoginPage = defineComponent({
   },
   setup() {
     onMounted(() => {
-      new Swiper(".swiper1", {
+      new Swiper(".login-swiper", {
         pagination: {
           el: ".swiper-pagination",
         },
@@ -74,9 +74,9 @@ const LoginPage = defineComponent({
         },
         autoplay: {
           delay: 3000,
-          stopOnLastSlide: false,
-          disableOnInteraction: true,
+          disableOnInteraction: true, // 用户操作Swiper之后，是否禁止Autoplay。默认为true：停止
         },
+        effect: 'fade',
         on: {
           navigationShow: function () {
             console.log("按钮显示了");
@@ -86,7 +86,7 @@ const LoginPage = defineComponent({
     })
 
     let loading = ref(true);
-    let imgList = reactive([]);
+    let imgList = ref([]);
     let { referrer } = document;
     const encrypt = new jsencrypt();
 
@@ -120,7 +120,6 @@ const LoginPage = defineComponent({
     
     axios.get('/fetchBingWallpaper').then((res) => {
       imgList.value = res.data.data
-      console.log(imgList, 'imgList')
     })
 
     const getLoginInfo = ({ username, password }) => {
@@ -203,13 +202,6 @@ export default LoginPage;
   align-items: center;
 }
 
-#login-page .login-img {
-  border-radius: 12px 0px 0px 12px;
-  width: 60%;
-  object-fit: cover;
-  object-position: center;
-}
-
 #login-page .login-wrapper {
   min-width: inherit;
   min-height: inherit;
@@ -219,6 +211,23 @@ export default LoginPage;
   background-color: #fff;
   border-radius: 12px;
   display: flex;
+}
+
+#login-page .login-img {
+  border-radius: 12px 0px 0px 12px;
+  
+  object-fit: cover;
+  object-position: center;
+}
+
+#login-page .login-wrapper .login-swiper {
+  width: 60%;
+}
+
+#login-page .login-wrapper .login-swiper .swiper-slide > img {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
 }
 
 #login-page .login-wrapper .login-form-wrapper {
