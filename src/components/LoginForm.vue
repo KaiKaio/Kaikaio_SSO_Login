@@ -1,5 +1,11 @@
 <template>
-  <el-form :model="ruleForm" :rules="rules" ref="v_loginForm" label-width="100px">
+  <el-form
+    ref="v_loginForm"
+    :model="ruleForm"
+    :rules="rules"
+    label-position="top"
+    hide-required-asterisk
+    label-width="100px">
     <el-form-item label="用户名" prop="username">
       <el-input v-model="ruleForm.username"></el-input>
     </el-form-item>
@@ -7,7 +13,7 @@
       <el-input type="password" v-model="ruleForm.password"></el-input>
     </el-form-item>
     <el-form-item>
-      <el-button type="primary" @click="submitForm">登录</el-button>
+      <el-button class="login-btn" type="primary" @click="submitForm">登录</el-button>
     </el-form-item>
   </el-form>
 </template>
@@ -66,3 +72,9 @@ const LoginForm = defineComponent({
 export default LoginForm
 
 </script>
+
+<style>
+.login-btn {
+  width: 100%;
+}
+</style>

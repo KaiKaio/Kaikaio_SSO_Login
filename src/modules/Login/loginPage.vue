@@ -1,10 +1,10 @@
 <template>
   <div id="login-page">
-    <p class="login-title">Kaikaio-SSO-Login</p>
     <div class="login-wrapper" v-loading="loading">
+      <p class="login-title">Kaikaio</p>
       <LoginForm @loginInfo="getLoginInfo" />
     </div>
-    <img class="login-img" src="http://static.kaikaio.com/article/v2-2d9808f88683a86c71e6c9b1b56277e8_r.jpg" alt="">
+    <img class="login-img" src="https://www.bing.com/th?id=OHR.VietnamFalls_ZH-CN9659529108_1920x1080.webp&qlt=50" alt="login_bg">
   </div>
 </template>
 
@@ -76,30 +76,34 @@ export default LoginPage
 @keyframes play {
   0% {
     opacity: 0;
-    right: -30%;
+    /* right: -30%; */
   }
   100% {
     opacity: 1;
-    right: 7%;
+    /* right: 7%; */
   }
 }
 
 #login-page {
+  color: #fff;
   position: relative;
   width: 100vw;
   height: 100vh;
-  background: #000;
   overflow: hidden;
 }
 
 #login-page .login-img {
   position: absolute;
-  width: 50%;
-  top: 30%;
-  animation-name: play;
+  width: 100%;
+  height: 100%;
+  top: 0px;
+  left: 0px;
+  object-fit: cover;
+  z-index: -1;
+  /* animation-name: play;
   animation-duration: 1s;
   animation-fill-mode: forwards;
-  filter: blur(3px);
+  filter: blur(3px); */
   transition: all .3s;
 }
 
@@ -108,13 +112,16 @@ export default LoginPage
 }
 
 .login-wrapper {
-  width: 30%;
+  width: 300px;
   position: absolute;
-  padding: 12px;
-  box-shadow: #8d8d8d 0px 0px 12px;
-  left: 20px;
-  border-radius: 12px;
-  border: 2px solid #8d8d8d;
+  padding: 0px 24px 0px 24px;
+  box-shadow: #8d8d8d 0px 2px 4px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 3px;
+  border: 1px solid #8d8d8d;
+  background-color: rgba(0, 0, 0, 0.6);
 }
 
 .login-wrapper .el-form-item__label {
@@ -122,10 +129,9 @@ export default LoginPage
 }
 
 .login-title {
-  color: #fff;
   font-weight: 700;
   font-size: 18px;
   text-align: center;
-  margin-top: 20px;
+  margin-top: 12px;
 }
 </style>
