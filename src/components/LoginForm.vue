@@ -7,10 +7,10 @@
     hide-required-asterisk
     label-width="100px">
     <el-form-item label="用户名" prop="username">
-      <el-input v-model="ruleForm.username"></el-input>
+      <el-input v-model="ruleForm.username" @keydown.enter="submitForm"></el-input>
     </el-form-item>
     <el-form-item label="密码：" prop="password">
-      <el-input type="password" v-model="ruleForm.password"></el-input>
+      <el-input type="password" v-model="ruleForm.password" @keydown.enter="submitForm"></el-input>
     </el-form-item>
     <el-form-item>
       <el-button class="login-btn" type="primary" @click="submitForm">登录</el-button>

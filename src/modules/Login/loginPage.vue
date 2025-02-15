@@ -23,10 +23,10 @@
           </svg>
           <h3>Kaikaio - SSO</h3>
         </div>
-        
+
         <LoginForm class="login-form" @loginInfo="getLoginInfo" />
       </div>
-      
+
     </div>
   </div>
 </template>
@@ -58,6 +58,7 @@ const LoginPage = defineComponent({
   setup() {
     onMounted(() => {
       new Swiper(".login-swiper", {
+        slidesPerView: 'auto',
         pagination: {
           el: ".swiper-pagination",
         },
@@ -119,12 +120,13 @@ const LoginPage = defineComponent({
         encrypt.setPublicKey(msg);
         loading.value = false;
       });
-    
+
     axios.get('/fetchBingWallpaper').then((res) => {
       imgList.value = res.data.data
     })
 
     const getLoginInfo = ({ username, password }) => {
+      loading.value = true
       axios
         .post("/user/login", {
           userName: username,
@@ -133,40 +135,46 @@ const LoginPage = defineComponent({
         .then(({ data: { token } }) => {
           localStorage.setItem("token", token);
 
-          handleReferrer(token);
+          handleReferrer(token).then(() => {
+            loading.value = false
+          });
         })
         .catch((err) => {
+          loading.value = false
           console.warn(err);
         });
     };
 
     const handleReferrer = (token) => {
-      window.addEventListener(
-        "message",
-        ({ data: { msg } }) => {
-          if (msg === "token received") {
-            iframe.remove();
-            window.location.href = referrer;
-          }
-        },
-        false
-      );
-
-      const iframe = document.createElement("iframe");
-      console.log(referrer, "iframeReferrer");
-      iframe.src = referrer;
-      iframe.style.display = "none";
-      document.body.append(iframe);
-      iframe.onload = () => {
-        // iframe加载完成后要进行的操作
-        iframe.contentWindow.postMessage(
-          {
-            token,
-            method: "setToken",
+      return new Promise((resolve) => {
+        window.addEventListener(
+          "message",
+          ({ data: { msg } }) => {
+            if (msg === "token received") {
+              iframe.remove();
+              resolve()
+              window.location.href = referrer;
+            }
           },
-          referrer
+          false
         );
-      };
+
+        const iframe = document.createElement("iframe");
+        console.log(referrer, "iframeReferrer");
+        iframe.src = referrer;
+        iframe.style.display = "none";
+        document.body.append(iframe);
+        iframe.onload = () => {
+          // iframe加载完成后要进行的操作
+          iframe.contentWindow.postMessage(
+            {
+              token,
+              method: "setToken",
+            },
+            referrer
+          );
+        };
+      })
     };
     return {
       loading,
@@ -185,6 +193,7 @@ export default LoginPage;
     opacity: 0;
     /* right: -30%; */
   }
+
   100% {
     opacity: 1;
     /* right: 7%; */
@@ -218,7 +227,7 @@ export default LoginPage;
 
 #login-page .login-img {
   border-radius: 12px 0px 0px 12px;
-  
+
   object-fit: cover;
   object-position: center;
 }
@@ -227,7 +236,7 @@ export default LoginPage;
   width: 60%;
 }
 
-#login-page .login-wrapper .login-swiper .swiper-slide > img {
+#login-page .login-wrapper .login-swiper .swiper-slide>img {
   object-fit: cover;
   width: 100%;
   height: 100%;
@@ -254,7 +263,7 @@ export default LoginPage;
   height: 50px;
 }
 
-#login-page .login-wrapper .login-form-wrapper .logo > h3 {
+#login-page .login-wrapper .login-form-wrapper .logo>h3 {
   font-size: 28px;
   line-height: 28px;
   font-weight: bold;
@@ -264,5 +273,24 @@ export default LoginPage;
 
 .login-wrapper .el-form-item__label {
   color: #333;
+}
+
+@media (max-width: 819px) {
+  #login-page .login-wrapper {
+    flex-direction: column;
+  }
+  #login-page .login-wrapper .login-swiper {
+    width: 100%;
+  }
+  #login-page .login-wrapper .login-form-wrapper .logo {
+    flex-direction: column;
+    align-items: center;
+  }
+  #login-page .login-wrapper .login-form-wrapper .logo>h3 {
+    margin-top: 6px;
+  }
+  #login-page .login-wrapper .login-form-wrapper {
+    padding: 8px 8px 8px 8px;
+  }
 }
 </style>
