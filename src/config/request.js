@@ -3,7 +3,7 @@ import axios from 'axios'
 const urlMap = {
   development: 'http://localhost:4000/api',
   test: 'https://api.kaikaio.com/api',
-  production: 'https://api.kaikaio.com/api',
+  production: '',
 }
 console.log(process.env, 'process.env')
 const service = axios.create({
