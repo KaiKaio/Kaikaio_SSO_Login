@@ -27,4 +27,4 @@ jobs:
       with:
         context: .
         push: ${{ github.event_name != 'pull_request' }}
-        tags: kaikaio/sso-login:latest
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/kaikaio-sso-login:latest
