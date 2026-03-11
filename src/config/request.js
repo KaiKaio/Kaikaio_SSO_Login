@@ -1,14 +1,8 @@
 import axios from 'axios'
 
-const urlMap = {
-  development: 'http://localhost:4000/api',
-  test: 'https://api.kaikaio.com/api',
-  production: '/api',
-}
-console.log(process.env, 'process.env')
 const service = axios.create({
   timeout: 20000, // Request Timeout
-  baseURL: urlMap[process.env.NODE_ENV]
+  baseURL: import.meta.env.VITE_APP_BASE_URL
 })
 
 service.interceptors.request.use(
