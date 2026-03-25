@@ -56,7 +56,7 @@ docker build -t kaikaio-sso-login .
 ```bash
 # 运行容器，并配置两个允许的域名
 docker run -d -p 80:80 \
-  -e REFERRER_HOSTS="https://kaikaio.com,https://admin.kaikaio.com,http://localhost:3000" \
+  -e REFERRER_HOSTS="https://kaikaio.com,https://admin.kaikaio.com,http://10.242.78.83:3002" \
   --name sso-login \
   kaikaio-sso-login
 ```

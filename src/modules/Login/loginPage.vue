@@ -155,6 +155,16 @@ const LoginPage = defineComponent({
               resolve()
               window.location.href = referrer;
             }
+
+            if (msg === "get token") {
+              iframe.contentWindow.postMessage(
+                {
+                  token,
+                  method: "setToken",
+                },
+                referrer
+              );
+            }
           },
           false
         );
@@ -166,13 +176,15 @@ const LoginPage = defineComponent({
         document.body.append(iframe);
         iframe.onload = () => {
           // iframe加载完成后要进行的操作
-          iframe.contentWindow.postMessage(
-            {
-              token,
-              method: "setToken",
-            },
-            referrer
-          );
+          setTimeout(() => {
+            iframe.contentWindow.postMessage(
+              {
+                token,
+                method: "setToken",
+              },
+              referrer
+            );
+          }, 500)
         };
       })
     };
