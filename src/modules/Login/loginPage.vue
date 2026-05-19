@@ -35,7 +35,7 @@
 import { defineComponent, reactive, ref, onMounted } from "vue";
 import LoginForm from "../../components/LoginForm.vue";
 import axios from "../../config/request";
-import jsencrypt from "jsencrypt";
+import forge from "node-forge";
 import { referrerHost } from "../../config/referrerHost";
 
 import Swiper, {
@@ -91,7 +91,7 @@ const LoginPage = defineComponent({
     let loading = ref(true);
     let imgList = ref([]);
     let { referrer } = document;
-    const encrypt = new jsencrypt();
+    let publicKey = null;
 
     axios
       .get("/user/verifyToken")
@@ -117,7 +117,7 @@ const LoginPage = defineComponent({
         return axios.get("/user/public_key");
       })
       .then(({ data: { msg } }) => {
-        encrypt.setPublicKey(msg);
+        publicKey = forge.pki.publicKeyFromPem(msg);
         loading.value = false;
       });
 
@@ -127,10 +127,17 @@ const LoginPage = defineComponent({
 
     const getLoginInfo = ({ username, password }) => {
       loading.value = true
+      const encrypted = publicKey.encrypt(password, 'RSA-OAEP', {
+        md: forge.md.sha256.create(),
+        mgf1: {
+          md: forge.md.sha256.create()
+        }
+      });
+      const encryptedBase64 = forge.util.encode64(encrypted);
       axios
         .post("/user/login", {
           userName: username,
-          password: encrypt.encrypt(password),
+          password: encryptedBase64,
         })
         .then(({ data: { token } }) => {
           localStorage.setItem("token", token);
