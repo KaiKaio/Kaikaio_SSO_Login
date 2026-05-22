@@ -127,12 +127,7 @@ const LoginPage = defineComponent({
 
     const getLoginInfo = ({ username, password }) => {
       loading.value = true
-      const encrypted = publicKey.encrypt(password, 'RSA-OAEP', {
-        md: forge.md.sha256.create(),
-        mgf1: {
-          md: forge.md.sha256.create()
-        }
-      });
+      const encrypted = publicKey.encrypt(password, 'RSA-OAEP');
       const encryptedBase64 = forge.util.encode64(encrypted);
       axios
         .post("/user/login", {
