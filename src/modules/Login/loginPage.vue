@@ -31,12 +31,20 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { defineComponent, reactive, ref, onMounted } from "vue";
 import LoginForm from "../../components/LoginForm.vue";
 import axios from "../../config/request";
 import forge from "node-forge";
+import { ElMessage } from "element-plus";
 import { referrerHost } from "../../config/referrerHost";
+import type { LoginParams, LoginResponse } from "../../types/user";
+import type { AxiosResponse } from "axios";
+
+interface WallpaperItem {
+  hsh: string;
+  url: string;
+}
 
 import Swiper, {
   Autoplay,
@@ -79,8 +87,8 @@ const LoginPage = defineComponent({
                 let event = document.createEvent("HTMLEvents");
                 event.initEvent("resize", true, true);
                 window.dispatchEvent(event);
-              } else if (document.createEventObject) {
-                window.fireEvent("onresize");
+              } else if ((document as any).createEventObject) {
+                (window as any).fireEvent("onresize");
               }
             }, 1000)
           },
@@ -89,9 +97,9 @@ const LoginPage = defineComponent({
     })
 
     let loading = ref(true);
-    let imgList = ref([]);
+    let imgList = ref<WallpaperItem[]>([]);
     let { referrer } = document;
-    let publicKey = null;
+    let publicKey: forge.pki.rsa.PublicKey | null = null;
 
     axios
       .get("/user/verifyToken")
@@ -103,7 +111,7 @@ const LoginPage = defineComponent({
         },
         (err) => {
           console.error(err, " => Token 失效");
-          return new Promise((resolve, reject) => {
+          return new Promise<void>((resolve, reject) => {
             resolve();
           });
         }
@@ -125,30 +133,39 @@ const LoginPage = defineComponent({
       imgList.value = res.data.data
     })
 
-    const getLoginInfo = ({ username, password }) => {
+    const getLoginInfo = ({ username, password }: { username: string; password: string }) => {
       loading.value = true
-      const encrypted = publicKey.encrypt(password, 'RSA-OAEP');
+      const encrypted = publicKey!.encrypt(password, 'RSA-OAEP');
       const encryptedBase64 = forge.util.encode64(encrypted);
+      const loginParams: LoginParams = {
+        userName: username,
+        password: encryptedBase64,
+      };
       axios
-        .post("/user/login", {
-          userName: username,
-          password: encryptedBase64,
-        })
-        .then(({ data: { token } }) => {
-          localStorage.setItem("token", token);
+        .post("/user/login", loginParams)
+        .then(({ data }: AxiosResponse<LoginResponse>) => {
+          const { code, msg, accessToken, refreshToken } = data;
+          if (code !== 0) {
+            throw new Error(msg || "登录失败");
+          }
 
-          handleReferrer(token).then(() => {
+          localStorage.setItem("token", accessToken);
+          localStorage.setItem("refreshToken", refreshToken);
+
+          handleReferrer(accessToken).then(() => {
             loading.value = false
           });
         })
         .catch((err) => {
           loading.value = false
+          const errMsg = err?.response?.data?.msg || err?.message || "登录失败";
+          ElMessage.error(errMsg);
           console.warn(err);
         });
     };
 
-    const handleReferrer = (token) => {
-      return new Promise((resolve) => {
+    const handleReferrer = (token: string) => {
+      return new Promise<void>((resolve) => {
         window.addEventListener(
           "message",
           ({ data: { msg } }) => {
@@ -159,7 +176,7 @@ const LoginPage = defineComponent({
             }
 
             if (msg === "get token") {
-              iframe.contentWindow.postMessage(
+              iframe.contentWindow?.postMessage(
                 {
                   token,
                   method: "setToken",
@@ -179,7 +196,7 @@ const LoginPage = defineComponent({
         iframe.onload = () => {
           // iframe加载完成后要进行的操作
           setTimeout(() => {
-            iframe.contentWindow.postMessage(
+            iframe.contentWindow?.postMessage(
               {
                 token,
                 method: "setToken",
